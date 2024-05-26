@@ -28,3 +28,8 @@ ___
 Basic models:
 * Variance Covariance: `var_es_dgm/basic_models/parametric.py`
 * Historical Simulation: `var_es_dgm/basic_models/hist_sim.py`
+* **TimeGrad**: `var_es_dgm/TimeGrad/`
+
+### Visualisations
+___
+All figures from the thesis could be created by running notebooks in `visualisations/`.
