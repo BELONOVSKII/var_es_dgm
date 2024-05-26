@@ -25,10 +25,15 @@ This downloads individual stocks's data and produces combined file `data/complet
 
 ### Models
 ___
-Basic models:
 * Variance Covariance: `var_es_dgm/basic_models/parametric.py`
 * Historical Simulation: `var_es_dgm/basic_models/hist_sim.py`
 * **TimeGrad**: `var_es_dgm/TimeGrad/`
+
+
+### Experiments
+___
+* Univariate:`experiments/univariate`
+* Multivariate: `experiments/multivariate`
 
 ### Visualisations
 ___
