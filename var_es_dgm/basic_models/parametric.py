@@ -71,8 +71,6 @@ class VarCov:
         VaR = w.T @ mu + torch.sqrt(w.T @ sigma @ w) * norm.ppf(0.05)
         ES = -1 * (
             w.T @ mu
-            + torch.sqrt(w.T @ sigma @ w)
-            * norm.pdf(norm.ppf(self.alpha))
-            / self.alpha
+            + torch.sqrt(w.T @ sigma @ w) * norm.pdf(norm.ppf(self.alpha)) / self.alpha
         )
         return VaR, ES

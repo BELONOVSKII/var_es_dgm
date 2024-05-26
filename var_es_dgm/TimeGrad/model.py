@@ -1,11 +1,16 @@
 import torch
 from torch import nn
 from tqdm.auto import tqdm
-
 from .epsilon_theta import EpsilonTheta
 
 
 class TimeGrad(nn.Module):
+    """
+    TimeGrad model from the "Non-autoregressive Conditional Diffusion Models for Time Series Prediction"
+
+    Source: https://arxiv.org/abs/2306.05043
+    """
+
     def __init__(
         self,
         target_dim,
@@ -16,6 +21,26 @@ class TimeGrad(nn.Module):
         dropout_rate=0.8,
         num_inference_steps=100,
     ):
+        """
+        Initializes the TimeGrad model.
+
+        Parameters
+        ----------
+        target_dim : int
+            Dimension of the target variable.
+        input_size : int
+            Size of the input features.
+        scheduler : object
+            Scheduler for the diffusion process.
+        num_layers : int, optional
+            Number of LSTM layers, by default 2.
+        hidden_size : int, optional
+            Number of features in the hidden state of the LSTM, by default 5.
+        dropout_rate : float, optional
+            Dropout rate for the LSTM, by default 0.8.
+        num_inference_steps : int, optional
+            Number of steps for the inference process, by default 100.
+        """
         super().__init__()
         self.rnn = nn.LSTM(
             input_size=input_size,
@@ -30,11 +55,25 @@ class TimeGrad(nn.Module):
         self.num_inference_steps = num_inference_steps
         self.target_dim = target_dim
 
-    def forward(self, x, prediction_length=1, num_parallel_samples=1):
+    def forward(self, x, prediction_length=1):
+        """
+        Forward pass for the TimeGrad model.
+
+        Parameters
+        ----------
+        x : torch.Tensor
+            Input tensor.
+        prediction_length : int, optional
+            Number of time steps to predict, by default 1.
+        num_parallel_samples : int, optional
+
+        Returns
+        -------
+        torch.Tensor
+            Future samples predicted by the model.
+        """
         batch_size = x.shape[0]
-
         _, (h, c) = self.rnn(x)
-
         next_sample = self.sample(h[-1]).reshape(batch_size, 1, -1)
         future_samples = next_sample
 
@@ -46,11 +85,21 @@ class TimeGrad(nn.Module):
         return future_samples
 
     def sample(self, context):
-        """Algorithm 2 from paper"""
+        """
+        Generates samples from the model.
 
+        Parameters
+        ----------
+        context : torch.Tensor
+            Context tensor from which to generate samples.
+
+        Returns
+        -------
+        torch.Tensor
+            Generated samples.
+        """
         # initialize random noise
         x = torch.randn((context.shape[0], self.target_dim), device=context.device)
-
         self.scheduler.set_timesteps(self.num_inference_steps)
 
         # denoise x step-by-step
@@ -67,6 +116,27 @@ class TimeGrad(nn.Module):
         return x
 
     def fit(self, train_loader, optimizer, n_epochs=50, device="cpu", verbose=True):
+        """
+        Fits the model to the training data.
+
+        Parameters
+        ----------
+        train_loader : DataLoader
+            DataLoader for the training data.
+        optimizer : torch.optim.Optimizer
+            Optimizer for training the model.
+        n_epochs : int, optional
+            Number of epochs to train, by default 50.
+        device : str, optional
+            Device to use for training ('cpu' or 'cuda' or "mps"), by default "cpu".
+        verbose : bool, optional
+            Whether to display progress, by default True.
+
+        Returns
+        -------
+        list
+            List of training losses for each epoch.
+        """
         losses = list()
         self.train()
 
@@ -90,8 +160,23 @@ class TimeGrad(nn.Module):
         return losses
 
     def loss(self, x_context, x_prediction, verbose=False):
-        """Algorithm 1 from paper"""
+        """
+        Computes the loss for the model.
 
+        Parameters
+        ----------
+        x_context : torch.Tensor
+            Context tensor.
+        x_prediction : torch.Tensor
+            Prediction tensor.
+        verbose : bool, optional
+            Whether to print intermediate values for debugging, by default False.
+
+        Returns
+        -------
+        torch.Tensor
+            Computed loss.
+        """
         batch_size = x_context.shape[0]
 
         # obtain h_{t-1} from context

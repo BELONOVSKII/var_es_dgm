@@ -10,7 +10,7 @@ class HistoricalSimulation:
         Parameters
         ----------
         alpha : float, optional
-            Confidence level for Value at Risk (VaR) and Expected Shortfall (ES) calculations, 
+            Confidence level for Value at Risk (VaR) and Expected Shortfall (ES) calculations,
             by default 0.05.
         """
         self.alpha = alpha
