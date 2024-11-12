@@ -3,6 +3,8 @@ Author:  **Belonovskiy Peter Ilich, HSE DSBA**
 
 Supervisor: **Naumenko Vladimir Vladimirovich, HSE Associate Professor**
 
+Thesis: https://www.hse.ru/en/edu/vkr/926006463?ysclid=m3e6gvwzru724833110
+
 ### Installation
 ___
 The dependency managament in project was implemented via [poetry](https://python-poetry.org).
@@ -13,7 +15,7 @@ cd var_es_dgm
 poetry install
 poetry shell
 ```
-Note, poetry should be pre-installed in your system.
+**Note:** poetry should be pre-installed in your system.
 
 ### Download data
 ___
